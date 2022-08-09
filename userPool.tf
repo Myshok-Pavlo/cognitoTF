@@ -78,17 +78,36 @@ resource "aws_cognito_user_pool" "user_pool" {
     # required                 = true
   }
 
+  schema {
+    attribute_data_type      = "String"
+    developer_only_attribute = false
+    mutable                  = false
+    name                     = "phone_number"
+    required                 = true
+
+    # attribute_data_type      = "String"
+    # developer_only_attribute = false
+    # mutable                  = false
+    # name                     = "phone_number"
+    # required                 = true
+  }
+
 }
 # user_pool_domain
 
 resource "aws_cognito_user_pool_client" "client" {
   # clients
 
-  generate_secret               = false
-  name                          = var.user_pool_client_name
-  user_pool_id                  = aws_cognito_user_pool.user_pool.id
-  refresh_token_validity        = 90
-  prevent_user_existence_errors = "ENABLED"
+  generate_secret                      = false
+  name                                 = var.user_pool_client_name
+  user_pool_id                         = aws_cognito_user_pool.user_pool.id
+  refresh_token_validity               = 90
+  prevent_user_existence_errors        = "ENABLED"
+  callback_urls                        = ["http://localhost:3000/api/auth/callback/cognito"] //  Add a Callback URL, for local development that would be  
+  allowed_oauth_flows_user_pool_client = true
+  allowed_oauth_flows                  = ["code", "implicit"]
+  allowed_oauth_scopes                 = ["email", "openid", "profile"]
+  supported_identity_providers         = ["COGNITO"]
   explicit_auth_flows = [
     "ALLOW_CUSTOM_AUTH",
     "ALLOW_REFRESH_TOKEN_AUTH",
